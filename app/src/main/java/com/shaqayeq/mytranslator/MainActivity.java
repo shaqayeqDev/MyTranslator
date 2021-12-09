@@ -3,6 +3,8 @@ package com.shaqayeq.mytranslator;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Build;
@@ -16,9 +18,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.shaqayeq.mytranslator.database.WordDao;
+import com.shaqayeq.mytranslator.database.WordDatabase;
+import com.shaqayeq.mytranslator.model.RecentlyWord;
 import com.shaqayeq.mytranslator.model.Root;
 import com.shaqayeq.mytranslator.utils.Const;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.CompletableObserver;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -31,10 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView firstLanguageIv, secondLanguageIv;
     private ImageView swapIv, searchIv;
     private EditText searchEt;
-    private ProgressBar progressBar;
+    private ProgressBar progressBar, wordProgress;
     private ApiService service = RetrofitClient.getClient().create(ApiService.class);
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
+    private WordDao wordDao;
+    private RecyclerView listRv;
+    private Intent intent;
+    private RecentlyWordAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         init();
         swapLanguage();
         searchClicked();
+        fillList();
     }
 
     private void searchClicked() {
@@ -76,8 +90,12 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this,R.color.light_black));
+            getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.light_black));
         }
+
+        adapter =  new RecentlyWordAdapter();
+
+        wordDao = WordDatabase.getDatabase(this).wordDao();
 
         firstLanguageIv = findViewById(R.id.firstLanguageTv);
         secondLanguageIv = findViewById(R.id.secondLanguageTv);
@@ -85,11 +103,21 @@ public class MainActivity extends AppCompatActivity {
         searchIv = findViewById(R.id.searchIv);
         searchEt = findViewById(R.id.searchEt);
         progressBar = findViewById(R.id.progressBar);
+        wordProgress = findViewById(R.id.wordProgress);
+        listRv = findViewById(R.id.recentlyWord);
+
+        listRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        listRv.setAdapter(adapter);
     }
 
-    private void handleVisibility(Boolean loading){
+    private void handleVisibilitySearch(Boolean loading) {
         progressBar.setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
         searchIv.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void handleVisibilityWord(Boolean loading) {
+        wordProgress.setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
+        listRv.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void search(boolean fa2en, String text) {
@@ -100,16 +128,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         compositeDisposable.add(d);
-                        handleVisibility(true);
+                        handleVisibilitySearch(true);
                     }
 
                     @Override
                     public void onSuccess(@NonNull Root root) {
-                        handleVisibility(false);
+                        handleVisibilitySearch(false);
                         if (root.response.code == 200) {
-                            Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                            intent = new Intent(MainActivity.this, DetailActivity.class);
 
-                            if (root.data.results.isEmpty()){
+                            if (root.data.results.isEmpty()) {
                                 Toast.makeText(MainActivity.this, "nothing to show", Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -118,14 +146,61 @@ public class MainActivity extends AppCompatActivity {
                             intent.putExtra("translated", root.data.results.get(0).text);
                             intent.putExtra("pron", root.data.results.get(0).pron);
 
-                            startActivity(intent);
+                            addWord(new RecentlyWord(text,root.data.results.get(0).text));
+
                         }
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        handleVisibility(false);
+                        handleVisibilitySearch(false);
                         Log.e(TAG, "onError: ", e);
+                    }
+                });
+    }
+
+    private void addWord(RecentlyWord word) {
+        wordDao.insert(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        compositeDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, "onError: ", e);
+                    }
+                });
+    }
+
+    private void fillList(){
+        wordDao.words()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<List<RecentlyWord>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        compositeDisposable.add(d);
+                        handleVisibilityWord(true);
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull List<RecentlyWord> recentlyWords) {
+                        handleVisibilityWord(false);
+                        adapter.setWords(recentlyWords);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        handleVisibilityWord(false);
                     }
                 });
     }

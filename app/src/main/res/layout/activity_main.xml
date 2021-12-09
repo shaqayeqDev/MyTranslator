@@ -168,4 +168,12 @@
         app:layout_constraintTop_toBottomOf="@id/recentlyTv"
         android:layout_marginTop="12dp"/>
 
+    <ProgressBar
+        android:id="@+id/wordProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/recentlyTv"
+        android:layout_marginTop="12dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
