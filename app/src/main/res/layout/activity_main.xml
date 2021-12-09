@@ -121,6 +121,7 @@
         app:layout_constraintTop_toBottomOf="@id/dictionaryTv">
 
         <EditText
+            android:id="@+id/searchEt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/dictionaryTv"
@@ -128,11 +129,12 @@
             android:textColor="@color/black"
             android:background="@null"
             android:layout_gravity="center"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="24dp"
             android:layout_marginRight="36dp"
-            android:hint="enter the word you want to translate"/>
+            android:hint="enter the FARSI word you want to translate"/>
 
         <ImageView
+            android:id="@+id/searchIv"
             android:layout_width="32dp"
             android:layout_height="32dp"
             app:srcCompat="@drawable/ic_baseline_search_24"
