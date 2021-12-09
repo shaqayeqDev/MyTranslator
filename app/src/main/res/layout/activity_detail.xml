@@ -75,6 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginRight="12dp"
+            android:layout_marginLeft="12dp"
             app:layout_constraintLeft_toLeftOf="@id/meaning"
             app:layout_constraintTop_toBottomOf="@id/meaning"
             tools:text="مقداری، تعدادی، چندین، اندکی، قدری، چندتا، چندی، تقریبا، تاحدی، کم و بیش، برخی، برخی از، بعضی، بعض، کسی، شخص یا چیز معینی، کمی از" />

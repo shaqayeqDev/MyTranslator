@@ -63,9 +63,9 @@
 
             <TextView
                 android:id="@+id/firstLanguageTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="FARSI"
                 android:textColor="@color/black" />
 
@@ -97,9 +97,9 @@
 
             <TextView
                 android:id="@+id/secondLanguageTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:text="ENGLISH"
                 android:textColor="@color/black" />
 

@@ -21,17 +21,21 @@ public class SplashActivity extends AppCompatActivity {
         logo = findViewById(R.id.logo);
         text = findViewById(R.id.textView);
 
-        logo.animate().setDuration(1000)
-                .translationY(logo.getMeasuredHeight())
-                .withEndAction(() -> {
-                    new Handler().postDelayed(() -> {
-                        startActivity(new Intent(this,MainActivity.class));
-                        finish();
-                    },3000);
-                });
+        logo.post(() -> {
+            logo.setAlpha(0f);
+            text.setAlpha(0f);
+            logo.animate().setDuration(1000)
+                    .alpha(1)
+                    .withEndAction(() -> {
+                        new Handler().postDelayed(() -> {
+                            startActivity(new Intent(this,MainActivity.class));
+                            finish();
+                        },3000);
+                    });
 
-        text.animate().setDuration(1000)
-                .translationY(-(text.getMeasuredHeight() * 2));
+            text.animate().setDuration(1000)
+                    .alpha(1);
+        });
 
     }
 }

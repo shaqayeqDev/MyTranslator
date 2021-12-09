@@ -24,8 +24,6 @@ import com.shaqayeq.mytranslator.model.RecentlyWord;
 import com.shaqayeq.mytranslator.model.Root;
 import com.shaqayeq.mytranslator.utils.Const;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.CompletableObserver;
@@ -35,10 +33,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements RecentlyWordAdapter.WordCallBack{
+public class MainActivity extends AppCompatActivity implements RecentlyWordAdapter.WordCallBack, ChooseLangFragment.LangCallBack {
 
     private static final String TAG = "MainActivity.class";
-    private TextView firstLanguageIv, secondLanguageIv,emptyListTv;
+    private TextView firstLanguageTv, secondLanguageTv, emptyListTv;
     private ImageView swapIv, searchIv;
     private EditText searchEt;
     private ProgressBar progressBar, wordProgress;
@@ -56,7 +54,19 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
 
         init();
         swapLanguage();
+        chooseLang();
         searchClicked();
+    }
+
+    private void chooseLang() {
+        firstLanguageTv.setOnClickListener(view -> {
+            ChooseLangFragment chooseLangFragment = ChooseLangFragment.newInstance(0);
+            chooseLangFragment.show(getSupportFragmentManager(), null);
+        });
+        secondLanguageTv.setOnClickListener(view -> {
+            ChooseLangFragment chooseLangFragment = ChooseLangFragment.newInstance(1);
+            chooseLangFragment.show(getSupportFragmentManager(), null);
+        });
     }
 
     @Override
@@ -68,24 +78,42 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
 
     private void searchClicked() {
         searchIv.setOnClickListener(view -> {
-            search(firstLanguageIv.getText().toString().equals("FARSI"), searchEt.getText().toString());
+            String first = firstLanguageTv.getText().toString();
+            String second = secondLanguageTv.getText().toString();
+
+            String pair = "";
+            if (first.equals("FARSI") && second.equals("ENGLISH"))
+                pair = "fa2en";
+            else if (first.equals("FARSI") && second.equals("ARABIC"))
+                pair = "fa2ar";
+            else if (first.equals("ENGLISH") && second.equals("FARSI"))
+                pair = "en2fa";
+            else if (first.equals("ARABIC") && second.equals("FARSI"))
+                pair = "ar2fa";
+            else
+                pair = null;
+
+            if (pair != null)
+                search(pair, searchEt.getText().toString());
+            else
+                Toast.makeText(this,"can not translate because you have chosen the wrong language",Toast.LENGTH_SHORT).show();
         });
     }
 
     private void swapLanguage() {
         swapIv.setOnClickListener(view -> {
-            String first = firstLanguageIv.getText().toString();
-            String second = secondLanguageIv.getText().toString();
+            String first = firstLanguageTv.getText().toString();
+            String second = secondLanguageTv.getText().toString();
             String temp = "";
 
             temp = first;
             first = second;
             second = temp;
 
-            firstLanguageIv.setText(first);
-            secondLanguageIv.setText(second);
+            firstLanguageTv.setText(first);
+            secondLanguageTv.setText(second);
 
-            if (firstLanguageIv.getText().toString().equals("FARSI"))
+            if (firstLanguageTv.getText().toString().equals("FARSI"))
                 searchEt.setHint("enter the FARSI word you want to translate");
             else
                 searchEt.setHint("enter the ENGLISH word you want to translate");
@@ -99,12 +127,12 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
             getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.light_black));
         }
 
-        adapter =  new RecentlyWordAdapter(this);
+        adapter = new RecentlyWordAdapter(this);
 
         wordDao = WordDatabase.getDatabase(this).wordDao();
 
-        firstLanguageIv = findViewById(R.id.firstLanguageTv);
-        secondLanguageIv = findViewById(R.id.secondLanguageTv);
+        firstLanguageTv = findViewById(R.id.firstLanguageTv);
+        secondLanguageTv = findViewById(R.id.secondLanguageTv);
         swapIv = findViewById(R.id.swapIv);
         searchIv = findViewById(R.id.searchIv);
         searchEt = findViewById(R.id.searchEt);
@@ -113,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
         listRv = findViewById(R.id.recentlyWord);
         emptyListTv = findViewById(R.id.emptyListTv);
 
-        listRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
+        listRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
         listRv.setAdapter(adapter);
     }
 
@@ -127,8 +155,8 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
         listRv.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
     }
 
-    private void search(boolean fa2en, String text) {
-        service.translate(Const.TOKEN, text, "exact", (fa2en) ? "fa2en" : "en2fa")
+    private void search(String pair, String text) {
+        service.translate(Const.TOKEN, text, "exact", pair)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<Root>() {
@@ -153,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
                             intent.putExtra("translated", root.data.results.get(0).text);
                             intent.putExtra("pron", root.data.results.get(0).pron);
 
-                            addWord(new RecentlyWord(text,root.data.results.get(0).text));
+                            addWord(new RecentlyWord(text, root.data.results.get(0).text));
 
                         }
                     }
@@ -188,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
                 });
     }
 
-    private void fillList(){
+    private void fillList() {
         wordDao.words()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -213,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
                 });
     }
 
-    private void removeRecentlyWord(RecentlyWord word){
+    private void removeRecentlyWord(RecentlyWord word) {
         wordDao.remove(word)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -245,5 +273,15 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
     @Override
     public void removeWord(RecentlyWord word) {
         removeRecentlyWord(word);
+    }
+
+    @Override
+    public void firstChanged(String text) {
+        firstLanguageTv.setText(text);
+    }
+
+    @Override
+    public void secondChanged(String text) {
+        secondLanguageTv.setText(text);
     }
 }
