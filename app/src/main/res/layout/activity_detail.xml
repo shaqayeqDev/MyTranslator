@@ -1,76 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DetailActivity">
 
-    <FrameLayout
-        android:id="@+id/f1"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:background="#E15555"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        tools:context=".DetailActivity">
 
-        <ImageView
-            android:id="@+id/backIv"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_gravity="top|left"
-            android:layout_margin="12dp"
-            app:tint="@color/white"
-            app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+        <FrameLayout
+            android:id="@+id/f1"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="#E15555"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/backIv"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|left"
+                android:layout_margin="12dp"
+                app:tint="@color/white"
+                app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
 
 
-        <LinearLayout
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/wordTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="SALAM"
+                    android:textColor="@color/white"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/pronTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="pron"
+                    android:textColor="@color/white"
+                    android:textSize="22sp" />
+
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/meaning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="42dp"
+            android:text="Meaning"
+            android:textSize="20sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/f1" />
 
-            <TextView
-                android:id="@+id/wordTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="SALAM"
-                android:textColor="@color/white"
-                android:textSize="28sp" />
+        <TextView
+            android:id="@+id/translatedTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="12dp"
+            app:layout_constraintLeft_toLeftOf="@id/meaning"
+            app:layout_constraintTop_toBottomOf="@id/meaning"
+            tools:text="مقداری، تعدادی، چندین، اندکی، قدری، چندتا، چندی، تقریبا، تاحدی، کم و بیش، برخی، برخی از، بعضی، بعض، کسی، شخص یا چیز معینی، کمی از" />
 
-            <TextView
-                android:id="@+id/pronTv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="pron"
-                android:textColor="@color/white"
-                android:textSize="22sp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-        </LinearLayout>
-
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/meaning"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="12dp"
-        android:text="Meaning"
-        android:textSize="20sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/f1" />
-
-    <TextView
-        android:id="@+id/translatedTv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        app:layout_anchor="@id/f1"
+        app:layout_anchorGravity="right|bottom"
         android:layout_marginRight="12dp"
-        app:layout_constraintLeft_toLeftOf="@id/meaning"
-        app:layout_constraintTop_toBottomOf="@id/meaning"
-        tools:text="مقداری، تعدادی، چندین، اندکی، قدری، چندتا، چندی، تقریبا، تاحدی، کم و بیش، برخی، برخی از، بعضی، بعض، کسی، شخص یا چیز معینی، کمی از" />
+        app:tint="@color/white"
+        app:backgroundTint="@color/yellow"
+        app:srcCompat="@drawable/ic_baseline_favorite_border_24"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/f1"
+        app:layout_anchorGravity="left|bottom"
+        android:layout_marginLeft="12dp"
+        app:tint="@color/red"
+        app:backgroundTint="@color/white"
+        app:srcCompat="@drawable/ic_baseline_record_voice_over_24"/>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
