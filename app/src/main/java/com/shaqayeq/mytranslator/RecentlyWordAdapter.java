@@ -18,9 +18,10 @@ import java.util.List;
 public class RecentlyWordAdapter extends RecyclerView.Adapter<RecentlyWordAdapter.RecentlyWordViewHolder> {
 
     private List<RecentlyWord> words = new ArrayList<>();
+    private WordCallBack wordCallBack;
 
-    public RecentlyWordAdapter() {
-
+    public RecentlyWordAdapter(WordCallBack wordCallBack) {
+        this.wordCallBack = wordCallBack;
     }
 
     public void setWords(List<RecentlyWord> words) {
@@ -36,7 +37,7 @@ public class RecentlyWordAdapter extends RecyclerView.Adapter<RecentlyWordAdapte
     public void removeWord(RecentlyWord word) {
         int index = words.indexOf(word);
         words.remove(index);
-        notifyItemInserted(index);
+        notifyItemRemoved(index);
     }
 
     @NonNull
@@ -69,6 +70,9 @@ public class RecentlyWordAdapter extends RecyclerView.Adapter<RecentlyWordAdapte
         public void bind(RecentlyWord recentlyWord) {
             wordTv.setText(recentlyWord.getWord());
             translatedTv.setText(getFirstMeaning(recentlyWord.getTranslatedWord()));
+            deleteIv.setOnClickListener(view ->{
+                wordCallBack.removeWord(recentlyWord);
+            });
         }
     }
 
@@ -78,6 +82,10 @@ public class RecentlyWordAdapter extends RecyclerView.Adapter<RecentlyWordAdapte
             return list.get(0);
         }else
             return "";
+    }
+
+    interface WordCallBack{
+        void removeWord(RecentlyWord word);
     }
 
 }

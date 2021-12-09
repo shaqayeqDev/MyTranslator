@@ -35,7 +35,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecentlyWordAdapter.WordCallBack{
 
     private static final String TAG = "MainActivity.class";
     private TextView firstLanguageIv, secondLanguageIv;
@@ -57,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         init();
         swapLanguage();
         searchClicked();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         fillList();
     }
 
@@ -93,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.light_black));
         }
 
-        adapter =  new RecentlyWordAdapter();
+        adapter =  new RecentlyWordAdapter(this);
 
         wordDao = WordDatabase.getDatabase(this).wordDao();
 
@@ -106,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         wordProgress = findViewById(R.id.wordProgress);
         listRv = findViewById(R.id.recentlyWord);
 
-        listRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        listRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
         listRv.setAdapter(adapter);
     }
 
@@ -205,4 +211,36 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void removeRecentlyWord(RecentlyWord word){
+        wordDao.remove(word)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        compositeDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        adapter.removeWord(word);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e(TAG, "onError: ", e);
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
+    }
+
+    @Override
+    public void removeWord(RecentlyWord word) {
+        removeRecentlyWord(word);
+    }
 }
