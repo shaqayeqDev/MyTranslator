@@ -13,11 +13,21 @@
         android:background="#E15555"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/backIv"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="top|left"
+            android:layout_margin="12dp"
+            app:tint="@color/white"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
+
+
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/wordTv"
@@ -34,8 +44,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="pron"
-                android:textSize="22sp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="22sp" />
 
 
         </LinearLayout>
@@ -61,6 +71,6 @@
         android:layout_marginRight="12dp"
         app:layout_constraintLeft_toLeftOf="@id/meaning"
         app:layout_constraintTop_toBottomOf="@id/meaning"
-        tools:text="مقداری، تعدادی، چندین، اندکی، قدری، چندتا، چندی، تقریبا، تاحدی، کم و بیش، برخی، برخی از، بعضی، بعض، کسی، شخص یا چیز معینی، کمی از"/>
+        tools:text="مقداری، تعدادی، چندین، اندکی، قدری، چندتا، چندی، تقریبا، تاحدی، کم و بیش، برخی، برخی از، بعضی، بعض، کسی، شخص یا چیز معینی، کمی از" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

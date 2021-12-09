@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RecentlyWordAdapter extends RecyclerView.Adapter<RecentlyWordAdapter.RecentlyWordViewHolder> {
 
-    private List<RecentlyWord> words = new ArrayList<>();
+    public List<RecentlyWord> words = new ArrayList<>();
     private WordCallBack wordCallBack;
 
     public RecentlyWordAdapter(WordCallBack wordCallBack) {

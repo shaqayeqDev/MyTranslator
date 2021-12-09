@@ -38,7 +38,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity implements RecentlyWordAdapter.WordCallBack{
 
     private static final String TAG = "MainActivity.class";
-    private TextView firstLanguageIv, secondLanguageIv;
+    private TextView firstLanguageIv, secondLanguageIv,emptyListTv;
     private ImageView swapIv, searchIv;
     private EditText searchEt;
     private ProgressBar progressBar, wordProgress;
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
         init();
         swapLanguage();
         searchClicked();
-
     }
 
     @Override
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
         super.onResume();
         fillList();
     }
+
 
     private void searchClicked() {
         searchIv.setOnClickListener(view -> {
@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
         progressBar = findViewById(R.id.progressBar);
         wordProgress = findViewById(R.id.wordProgress);
         listRv = findViewById(R.id.recentlyWord);
+        emptyListTv = findViewById(R.id.emptyListTv);
 
         listRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,true));
         listRv.setAdapter(adapter);
@@ -202,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
                     public void onSuccess(@NonNull List<RecentlyWord> recentlyWords) {
                         handleVisibilityWord(false);
                         adapter.setWords(recentlyWords);
+                        emptyListTv.setVisibility(recentlyWords.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                     }
 
                     @Override
@@ -224,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
                     @Override
                     public void onComplete() {
                         adapter.removeWord(word);
+                        emptyListTv.setVisibility(adapter.words.isEmpty() ? View.VISIBLE : View.INVISIBLE);
                     }
 
                     @Override
