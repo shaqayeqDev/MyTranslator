@@ -141,6 +141,14 @@
             android:layout_marginRight="12dp"
             android:layout_gravity="right|center_vertical"/>
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginRight="12dp"
+            android:visibility="invisible"
+            android:layout_gravity="right|center_vertical"/>
+
     </com.google.android.material.card.MaterialCardView>
 
     <TextView

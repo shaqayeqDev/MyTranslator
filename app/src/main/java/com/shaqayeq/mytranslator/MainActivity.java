@@ -2,13 +2,19 @@ package com.shaqayeq.mytranslator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shaqayeq.mytranslator.model.Root;
 import com.shaqayeq.mytranslator.utils.Const;
@@ -25,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView firstLanguageIv, secondLanguageIv;
     private ImageView swapIv, searchIv;
     private EditText searchEt;
+    private ProgressBar progressBar;
     private ApiService service = RetrofitClient.getClient().create(ApiService.class);
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -67,11 +74,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(MainActivity.this,R.color.light_black));
+        }
+
         firstLanguageIv = findViewById(R.id.firstLanguageTv);
         secondLanguageIv = findViewById(R.id.secondLanguageTv);
         swapIv = findViewById(R.id.swapIv);
         searchIv = findViewById(R.id.searchIv);
         searchEt = findViewById(R.id.searchEt);
+        progressBar = findViewById(R.id.progressBar);
+    }
+
+    private void handleVisibility(Boolean loading){
+        progressBar.setVisibility(loading ? View.VISIBLE : View.INVISIBLE);
+        searchIv.setVisibility(loading ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void search(boolean fa2en, String text) {
@@ -82,20 +100,31 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
                         compositeDisposable.add(d);
+                        handleVisibility(true);
                     }
 
                     @Override
                     public void onSuccess(@NonNull Root root) {
+                        handleVisibility(false);
                         if (root.response.code == 200) {
                             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+
+                            if (root.data.results.isEmpty()){
+                                Toast.makeText(MainActivity.this, "nothing to show", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
                             intent.putExtra("text", text);
                             intent.putExtra("translated", root.data.results.get(0).text);
+                            intent.putExtra("pron", root.data.results.get(0).pron);
+
                             startActivity(intent);
                         }
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
+                        handleVisibility(false);
                         Log.e(TAG, "onError: ", e);
                     }
                 });
