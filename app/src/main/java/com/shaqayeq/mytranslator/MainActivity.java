@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
             if (pair != null)
                 search(pair, searchEt.getText().toString());
             else
-                Toast.makeText(this,"can not translate because you have chosen the wrong language",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "can not translate because you have chosen the wrong language", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -115,9 +115,10 @@ public class MainActivity extends AppCompatActivity implements RecentlyWordAdapt
 
             if (firstLanguageTv.getText().toString().equals("FARSI"))
                 searchEt.setHint("enter the FARSI word you want to translate");
-            else
+            else if (firstLanguageTv.getText().toString().equals("FARSI"))
                 searchEt.setHint("enter the ENGLISH word you want to translate");
-
+            else
+                searchEt.setHint("enter the ARABIC word you want to translate");
         });
     }
 
